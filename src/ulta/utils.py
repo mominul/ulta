@@ -152,7 +152,7 @@ def predict_single_image(model, image_path: Union[Image.Image, str], device, tra
     duration = end_time - start_time
 
     print(
-        f"-> Image: '{os.path.basename(image_path)}' | Prediction: {result.description} (Took {duration:.4f} seconds)"
+        f"-> Image Orientation Prediction: {result.description} (Took {duration:.4f} seconds)"
     )
 
     return result

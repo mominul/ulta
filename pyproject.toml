@@ -1,14 +1,18 @@
 [project]
 name = "ulta"
-version = "0.1.0"
+version = "0.2.0"
 description = "Image Orientation Detection Library"
 readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "MIT"}
-authors = [
-    {name = "Muhammad Mominul Huque", email = "mominul2082@gmail.com"}
+license = { text = "MIT" }
+authors = [{ name = "Muhammad Mominul Huque", email = "mominul2082@gmail.com" }]
+keywords = [
+    "machine-learning",
+    "inference",
+    "image-processing",
+    "computer-vision",
+    "orientation-detection",
 ]
-keywords = ["machine-learning", "inference", "image-processing", "computer-vision", "orientation-detection"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -34,6 +38,4 @@ requires = ["uv_build>=0.9.0,<0.10.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = [
-    "pytest>=8.4.2",
-]
+dev = ["pytest>=8.4.2"]
