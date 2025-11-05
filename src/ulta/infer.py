@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Any, Optional
+from PIL import Image
+from typing import Optional, Union
 import torch
 
 from .manager import ModelManager
@@ -46,14 +47,14 @@ class OrientationDetection:
         self._model.to(self.device)
         self._model.eval()
 
-    def detect_orientation(self, image_path: str) -> Orientation:
+    def detect_orientation(self, image: Union[Image.Image, str]) -> Orientation:
         """
         Detect the orientation of an image.
 
         Args:
-            image_path: Path to the input image
+            image: Path to the input image or a PIL Image
 
         Returns:
             Prediction result
         """
-        return predict_single_image(self._model, image_path, self.device, self.transforms)
+        return predict_single_image(self._model, image, self.device, self.transforms)

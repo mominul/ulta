@@ -7,6 +7,7 @@ import torchvision.transforms as transforms
 from .config import IMAGE_SIZE, CLASS_MAP
 from PIL import Image, ImageOps
 from .enum import Orientation
+from typing import Union
 
 
 def setup_logging():
@@ -101,20 +102,42 @@ def load_image_safely(path: str) -> Image.Image:
 
     return background
 
+def use_image_safely(img: Image.Image) -> Image.Image:
+    """
+    Ensures the provided PIL Image is in a safe 3-channel RGB format.
+    Handles palletized images and images with transparency by compositing
+    them onto a white background.
+    """
+    img = ImageOps.exif_transpose(img)
 
-def predict_single_image(model, image_path, device, transforms) -> Orientation:
+    if img.mode in ("RGB", "L"):  # L is grayscale
+        return img.convert("RGB")
+
+    rgba_img = img.convert("RGBA")
+
+    background = Image.new("RGB", rgba_img.size, (255, 255, 255))
+
+    background.paste(rgba_img, mask=rgba_img)
+
+    return background
+
+
+def predict_single_image(model, image_path: Union[Image.Image, str], device, transforms) -> Orientation:
     """Predicts orientation for a single image file and logs the time taken."""
 
     start_time = time.time()  # Start timer
 
-    try:
-        image = load_image_safely(image_path)
-    except FileNotFoundError:
-        print(f"File not found: {image_path}")
-        return
-    except Exception as e:
-        print(f"Error opening image {image_path}: {e}")
-        return
+    if isinstance(image_path, Image.Image):
+        image = use_image_safely(image_path)
+    else:
+        try:
+            image = load_image_safely(image_path)
+        except FileNotFoundError:
+            print(f"File not found: {image_path}")
+            return
+        except Exception as e:
+            print(f"Error opening image {image_path}: {e}")
+            return
 
     input_tensor = transforms(image).unsqueeze(0).to(device)
 
@@ -128,8 +151,8 @@ def predict_single_image(model, image_path, device, transforms) -> Orientation:
     end_time = time.time()  # End timer
     duration = end_time - start_time
 
-    # print(
-    #     f"-> Image: '{os.path.basename(image_path)}' | Prediction: {result} (Took {duration:.4f} seconds)"
-    # )
+    print(
+        f"-> Image: '{os.path.basename(image_path)}' | Prediction: {result.description} (Took {duration:.4f} seconds)"
+    )
 
     return result
